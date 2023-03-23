@@ -3,8 +3,60 @@ import struct
 
 class CalculadoradeOperacoes:
 
+    #Serve basicamente para tratar as Exceptions do padrão IEEE-754
+    class IEEE754Exception(Exception):
+        pass
+
+    def calculaResultado(self, valor1, valor2, operacao):
+
+        resultadoReal = None
+
+        try:
+            self.verificaIntervaloPontoFlutuante(valor1)
+            self.verificaIntervaloPontoFlutuante(valor2)
+
+            if operacao == '+':
+                resultado = valor1 + valor2
+            elif operacao == '-':
+                resultado = valor1 - valor2
+            elif operacao == '*':
+                resultado = valor1 * valor2
+            elif operacao == '/':
+                resultado = valor1 / valor2
+            else:
+                return ("A operação informada não foi reconhecida.")
+
+            resultadoReal = self.verificaResultadosEspeciais(resultado)
+
+        except FloatingPointError as error:
+            print("Erro de ponto flutuante: {}".format(str(error)))
+            raise error
+
+        except OverflowError:
+            print("Exception OVERFLOW: O resultado é maior do que o maior número representável.")
+            raise self.IEEE754Exception(resultado, "OVERFLOW")
+
+        except ValueError as e:
+            print(e.args[0])
+            return None
+        
+        finally:
+            print("O resultado da operação é: {}".format(resultadoReal))
+            return resultadoReal
+
+    #Verifica se aquele valor está no intervalo permitido para representação em ponto flutuante
     @staticmethod
-    def verificaInfinito(resultado):
+    def verificaIntervaloPontoFlutuante(valor):
+        if valor < -math.pow(2, 127) or valor > math.pow(2, 127):
+            raise ValueError("Valor fora do intervalo permitido para representação em ponto flutuante de 32 bits. Valor:" + str(valor))
+        else:
+            return valor
+
+
+    @staticmethod
+    def verificaResultadosEspeciais(resultado):
+        #self.verificaIntervaloPontoFlutuante(resultado)
+
         #Usa a biblioteca para validar se o resultado é infinito
         if math.isinf(resultado):
             if resultado > 0:
@@ -16,6 +68,7 @@ class CalculadoradeOperacoes:
         else:
             return resultado
 
+
     @staticmethod
     def floatParaBinario(valorFloat):
         #Converte o float para uma string de bytes
@@ -23,37 +76,4 @@ class CalculadoradeOperacoes:
 
         #Converte a string de bytes para uma sequência de bits
         bits = ''.join('{:08b}'.format(c) for c in aux)
-
-        #Verifica underflow e overflow
-        tamanho_float_bits = struct.calcsize('f') * 8
-        if len(bits) < tamanho_float_bits:
-            print("Exception UNDERFLOW: Houve underflow na conversão para binário.")
-        elif len(bits) > tamanho_float_bits:
-            print("Exception OVERFLOW: Houve overflow na conversão para binário.")
-
         return bits
-
-    def calculaResultado(self, valor1, valor2, operacao):
-        try:
-            if operacao == '+':
-                resultado = valor1 + valor2
-            elif operacao == '-':
-                resultado = valor1 - valor2
-            elif operacao == '*':
-                resultado = valor1 * valor2
-            elif operacao == '/':
-                resultado = valor1 / valor2
-            else:
-                return False
-
-            resultadoReal = self.verificaInfinito(resultado)
-            print("O resultado é:", resultadoReal)
-
-            #Mostrando a configuração de bits das duas variáveis e do resultado
-            print("\nAqui está a configuração de bits das variáveis e do resultado:")
-            print("Valor1:", self.floatParaBinario(valor1))
-            print("Valor2:",self.floatParaBinario(valor2))
-            print("Resultado:", self.floatParaBinario(resultado))
-
-        except ZeroDivisionError:
-            print("Exception DIVBYZERO: Não é possível dividir por zero.")
