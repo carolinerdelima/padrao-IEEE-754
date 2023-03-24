@@ -9,33 +9,25 @@ class App:
         try:
             #Recebe a expressão via linha de comando e faz o split
             expressaoCompleta = input("\nDigite uma expressão no formato -> 'valor1 operação valor2'.\nExemplo: 10 / 2 :\n ")
+            valor1, operacao, valor2 = expressaoCompleta.split()
+
             if (expressaoCompleta == 'sair'):
                 break
-
-            valor1, operacao, valor2 = expressaoCompleta.split()
 
             #Convertendo para float
             valor1 = float(valor1)
             valor2 = float(valor2)
 
             retorno = calculadoraObj.calculaResultado(valor1, valor2, operacao)
+            print("O resultado da operação é: {}".format(retorno))
+
+            #Mostrando a configuração de bits das duas variáveis e do resultado
+            print("\nAqui está a configuração de bits das variáveis e do resultado:")
+            print("Valor1 -> {}:".format(valor1), calculadoraObj.floatParaBinario(valor1))
+            print("Valor2 -> {}:".format(valor2),calculadoraObj.floatParaBinario(valor2))
             
-            #Tratamento dos retornos
-            if retorno is None:
-                print("A expressão digitada é inválida\n\n")
-                continue
-            elif isinstance(retorno, str):
-                print(retorno)
-            else:
-                print(retorno)
+            if (retorno != None):
+                print("Resultado-> {}:".format(retorno), calculadoraObj.floatParaBinario(float(retorno)))
 
-                # Mostrando a configuração de bits das duas variáveis e do resultado
-                print("\nAqui está a configuração de bits das variáveis e do resultado:")
-                print("Valor1:", calculadoraObj.floatParaBinario(valor1))
-                print("Valor2:",calculadoraObj.floatParaBinario(valor2))
-                print("Resultado:", calculadoraObj.floatParaBinario(retorno))
-
-        except CalculadoradeOperacoes.IEEE754Exception as e:
-            print("Resultado: {}".format(e.args[0]))
-            print("Exception: {}".format(e.args[1]))
-            break
+        except ValueError:
+            print("A expressão digitada é inválida\n\n")
