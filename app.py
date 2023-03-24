@@ -26,8 +26,8 @@ class App:
             print("Valor1 -> {}:".format(valor1), calculadoraObj.floatParaBinario(valor1))
             print("Valor2 -> {}:".format(valor2),calculadoraObj.floatParaBinario(valor2))
             
-            if (retorno != None):
+            if (type(retorno) == float):
                 print("Resultado-> {}:".format(retorno), calculadoraObj.floatParaBinario(float(retorno)))
 
-        except ValueError:
-            print("A expressão digitada é inválida\n\n")
+        except ValueError as error:
+            print("\nA expressão digitada é inválida:", error)

@@ -19,27 +19,29 @@ class CalculadoradeOperacoes:
                 resultado = valor1 * valor2
             elif operacao == '/':
                 resultado = valor1 / valor2
-                if math.isinf(resultado):
+                if math.isnan(resultado):
+                    return "Not a Number."
+                elif math.isinf(resultado):
                     if resultado > 0:
-                        return "+ infinito"
+                        return "+infinito"
                     else:
-                        return "- infinito"
+                        return "-infinito"
             else:
                 return ("A operação informada não foi reconhecida.")
 
             return self.verificaResultadosEspeciais(resultado)
 
         except ZeroDivisionError:
-            print("Exception ZeroDivisionError: Divisão por zero encontrada.")
+            print("Exception ZeroDivisionError: Divisão por zero encontrada na expressão: {} {} {}".format(valor1, operacao, valor2))
             resultado = float('inf')
             if resultado > 0:
-                return "O resultado é: + infinito"
+                return "+ infinito"
             else:
-                return "O resultado é: - infinito"
+                return "- infinito"
 
         except CalculadoradeOperacoes.IEEE754Exception as e:
-            print("Resultado: {}".format(e.args[0]))
-            print("Exception: {}".format(e.args[1]))
+            print("Resultado: {}. Erro: {}".format(e.args[0], e.args[1]))
+            print("Exception: Ocorreu um erro IEEE754Exception na expressão: {} {} {}".format(valor1, operacao, valor2))
 
         except ValueError as e:
             print(e.args[0])
@@ -48,7 +50,7 @@ class CalculadoradeOperacoes:
     @staticmethod
     def verificaIntervaloPontoFlutuante(valor):
         if valor < -math.pow(2, 127) or valor > math.pow(2, 127):
-            raise ValueError("Valor fora do intervalo permitido para representação em ponto flutuante de 32 bits. Valor:" + str(valor))
+            raise ValueError("Valor fora do intervalo permitido para representação em ponto flutuante de 32 bits. Valor: " + str(valor))
         else:
             return valor
 
@@ -58,13 +60,13 @@ class CalculadoradeOperacoes:
         #self.verificaIntervaloPontoFlutuante(resultado)
 
         #Usa a biblioteca para validar se o resultado é infinito
-        if math.isinf(resultado):
+        if math.isnan(resultado):
+            return "Not a Number."
+        elif math.isinf(resultado):
             if resultado > 0:
-                return "O resultado é: + infinito"
+                return "+infinito"
             else:
-                return "O resultado é: - infinito"
-        elif math.isnan(resultado):
-            return "Exception NAN: O resultado é: Not a Number."
+                return "-infinito"
         else:
             return resultado
 
